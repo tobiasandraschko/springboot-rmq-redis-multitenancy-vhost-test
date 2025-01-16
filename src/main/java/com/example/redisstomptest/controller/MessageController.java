@@ -19,9 +19,9 @@ public class MessageController {
 
   private final MessageService messageService;
 
-  @MessageMapping("/send/{scope}") // Change this line to capture the scope variable
+  @MessageMapping("/send/{scope}")
   @SendTo("/topic/{scope}")
-  public Message[] handleMessage(
+  public Message handleMessage(
     Message message,
     @Header("simpSessionId") String sessionId,
     @DestinationVariable String scope
@@ -39,7 +39,7 @@ public class MessageController {
         message.getScope(),
         scope
       );
-      return new Message[0];
+      return null;
     }
 
     message.setTimestamp(new Date());
@@ -52,7 +52,9 @@ public class MessageController {
 
     Message ackMessage = new Message();
     BeanUtils.copyProperties(message, ackMessage);
-    ackMessage.setContent("ACK: " + message.getContent());
+    ackMessage.setContent(
+      "ACK: backend received your message of '" + message.getContent() + "'"
+    );
     ackMessage.setTimestamp(new Date());
     messageService.saveMessage(
       message.getTenant(),
@@ -60,16 +62,6 @@ public class MessageController {
       ackMessage
     );
 
-    Message echoMessage = new Message();
-    BeanUtils.copyProperties(message, echoMessage);
-    echoMessage.setContent("ECHO: " + message.getContent());
-    echoMessage.setTimestamp(new Date());
-    messageService.saveMessage(
-      message.getTenant(),
-      message.getUserId(),
-      echoMessage
-    );
-
-    return new Message[] { message, ackMessage, echoMessage };
+    return ackMessage;
   }
 }

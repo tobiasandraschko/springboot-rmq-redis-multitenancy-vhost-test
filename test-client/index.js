@@ -45,35 +45,55 @@ function connect(tenant) {
         stomp.subscribe(
           `/topic/${scope}`,
           function (response) {
-            debug(`=== Subscription callback for ${scope} ===`);
-            debug("Raw response:", response);
             try {
-              const rawBody = response.body;
-              debug("Raw body:", rawBody);
-              const message = JSON.parse(rawBody);
-              debug("Parsed message:", message);
+              debug(`Raw message received on ${scope}:`, response);
+              const message = JSON.parse(response.body); // Now parsing a single message
 
               if (message.tenant === tenant) {
-                debug(`Message accepted for tenant ${tenant}`);
+                debug(
+                  `Processing message for ${tenant} on scope ${message.scope}`
+                );
                 appendMessage(tenant, message.scope, message);
               } else {
                 debug(
-                  `Message rejected - wrong tenant (got ${message.tenant}, expected ${tenant})`
+                  `Skipping message for different tenant ${message.tenant}`
                 );
               }
             } catch (error) {
-              console.error("Error in subscription callback:", error);
-              console.error("Response that caused error:", response);
+              console.error("Error processing message:", error);
+              console.error("Raw response was:", response);
             }
-            debug(`=== End subscription callback for ${scope} ===`);
           },
           {
             ack: "auto",
             id: `sub-${scope}-${tenant}`,
-            durable: false,
-            exclusive: false,
           }
         );
+
+        function appendMessage(tenant, scope, message) {
+          debug(
+            `Appending message: ${JSON.stringify(
+              message
+            )} to ${tenant}-${scope}`
+          );
+          const messageBox = document.getElementById(`${tenant}-${scope}`);
+          if (!messageBox) {
+            console.error(`Message box not found: ${tenant}-${scope}`);
+            return;
+          }
+
+          const messageElement = document.createElement("div");
+          const time = new Date(message.timestamp).toLocaleTimeString();
+          messageElement.textContent = `${time} - ${message.content}`;
+
+          if (message.content.startsWith("ACK:")) {
+            messageElement.style.color = "green";
+          }
+
+          messageBox.appendChild(messageElement);
+          messageBox.scrollTop = messageBox.scrollHeight;
+          debug(`Successfully appended message to ${tenant}-${scope}`);
+        }
         debug(`Subscribed to /topic/${scope}`);
       });
     },
@@ -113,6 +133,7 @@ function sendManualMessage(tenant) {
 
   try {
     debug("Sending message:", message);
+    appendMessage(tenant, message.scope, message);
     connection.stomp.send(`/app/send/${message.scope}`, {}, JSON.stringify(message));
     messageInput.value = "";
   } catch (error) {
@@ -129,15 +150,13 @@ function appendMessage(tenant, scope, message) {
   }
 
   const messageElement = document.createElement("div");
-  const time = new Date().toLocaleTimeString();
-  messageElement.textContent = `${time} - ${message.content}`;
-
+  const time = new Date(message.timestamp).toLocaleTimeString();
+  
   if (message.content.startsWith("ACK:")) {
     messageElement.style.color = "green";
-  } else if (message.content.startsWith("ECHO:")) {
-    messageElement.style.color = "blue";
-  }
-
+  } 
+  
+  messageElement.textContent = `${time} - ${message.content}`;
   messageBox.appendChild(messageElement);
   messageBox.scrollTop = messageBox.scrollHeight;
   debug(`Successfully appended message to ${tenant}-${scope}`);
