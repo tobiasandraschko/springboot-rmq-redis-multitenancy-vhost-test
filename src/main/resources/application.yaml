@@ -1,0 +1,17 @@
+server:
+  port: 8085
+
+logging:
+  level:
+    org: INFO
+    org.springframework.web: DEBUG
+    org.springframework.messaging: DEBUG
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: abc123
+      timeout: 2000
+      database: 0
