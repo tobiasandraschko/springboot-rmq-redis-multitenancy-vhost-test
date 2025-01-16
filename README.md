@@ -27,7 +27,7 @@ docker-compose up -d
 ./gradlew bootRun
 ```
 
-3. Open webClient.html using VS Code's Live Server extension (127.0.0.1:5500)
+3. Open the test clients index.html using VS Code's Live Server extension (127.0.0.1:5500)
 
 ## Management UIs
 

@@ -1,7 +1,7 @@
 package com.example.redisstomptest.service;
 
 import com.example.redisstomptest.model.Message;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,15 +14,20 @@ public class MessageService {
   private final RedisTemplate<String, Message> redisTemplate;
 
   public void saveMessage(String tenant, String userId, Message message) {
-    String key = String.format("messages:%s:%s", tenant, userId);
+    String key = String.format(
+      "messages:%s:%s:%s",
+      tenant,
+      userId,
+      message.getScope()
+    );
     redisTemplate.opsForList().rightPush(key, message);
   }
 
-  public List<Message> getMessages(String tenant, String userId) {
-    String key = String.format("messages:%s:%s", tenant, userId);
+  public List<Message> getMessages(String tenant, String userId, String scope) {
+    String key = String.format("messages:%s:%s:%s", tenant, userId, scope);
     Long size = redisTemplate.opsForList().size(key);
     if (size == null || size == 0) {
-      return new ArrayList<>();
+      return Collections.emptyList();
     }
     return redisTemplate.opsForList().range(key, 0, size - 1);
   }

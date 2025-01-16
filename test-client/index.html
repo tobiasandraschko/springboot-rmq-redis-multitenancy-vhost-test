@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-tenant WebSocket Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="controls">
+        <button onclick="connect('tenant1')">Connect Tenant 1</button>
+        <button onclick="connect('tenant2')">Connect Tenant 2</button>
+        <div>
+            <span id="tenant1-status" class="disconnected">Tenant 1: Disconnected</span>
+        </div>
+        <div>
+            <span id="tenant2-status" class="disconnected">Tenant 2: Disconnected</span>
+        </div>
+    </div>
+
+    <div id="tenant1" class="tenant-container">
+        <h3>Tenant 1</h3>
+        <div class="message-input">
+            <input type="text" id="tenant1-message" placeholder="Enter message">
+            <select id="tenant1-scope">
+                <option value="news">News</option>
+                <option value="alerts">Alerts</option>
+                <option value="chat">Chat</option>
+            </select>
+            <button onclick="sendManualMessage('tenant1')">Send Message</button>
+        </div>
+        <div class="scope-container">
+            <div>
+                <div class="scope-title">News Channel</div>
+                <div id="tenant1-news" class="message-box"></div>
+            </div>
+            <div>
+                <div class="scope-title">Alerts Channel</div>
+                <div id="tenant1-alerts" class="message-box"></div>
+            </div>
+            <div>
+                <div class="scope-title">Chat Channel</div>
+                <div id="tenant1-chat" class="message-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tenant2" class="tenant-container">
+        <h3>Tenant 2</h3>
+        <div class="message-input">
+            <input type="text" id="tenant2-message" placeholder="Enter message">
+            <select id="tenant2-scope">
+                <option value="news">News</option>
+                <option value="alerts">Alerts</option>
+                <option value="chat">Chat</option>
+            </select>
+            <button onclick="sendManualMessage('tenant2')">Send Message</button>
+        </div>
+        <div class="scope-container">
+            <div>
+                <div class="scope-title">News Channel</div>
+                <div id="tenant2-news" class="message-box"></div>
+            </div>
+            <div>
+                <div class="scope-title">Alerts Channel</div>
+                <div id="tenant2-alerts" class="message-box"></div>
+            </div>
+            <div>
+                <div class="scope-title">Chat Channel</div>
+                <div id="tenant2-chat" class="message-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -13,6 +13,7 @@ public class Message {
   private String content;
   private String tenant;
   private String userId;
+  private String scope;
   private boolean acknowledged;
   private Date timestamp;
 }
