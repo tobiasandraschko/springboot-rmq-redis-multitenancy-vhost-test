@@ -15,3 +15,11 @@ spring:
       password: abc123
       timeout: 2000
       database: 0
+
+rabbitmq:
+  host: localhost
+  stomp:
+    port: 8024
+  username: guest
+  password: guest
+  virtual-hosts: /,tenant1,tenant2

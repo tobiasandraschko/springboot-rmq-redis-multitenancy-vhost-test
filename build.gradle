@@ -37,6 +37,9 @@ dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.integration:spring-integration-test'
+
+    implementation 'io.projectreactor.netty:reactor-netty:1.1.15'
+    implementation 'org.springframework.integration:spring-integration-core'
 }
 
 tasks.named('test') {

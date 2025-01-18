@@ -1,6 +1,6 @@
 package com.example.redisstomptest.controller;
 
-import com.example.redisstomptest.model.Message;
+import com.example.redisstomptest.model.ChatMessage;
 import com.example.redisstomptest.service.MessageService;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +21,32 @@ public class MessageController {
 
   @MessageMapping("/send/{scope}")
   @SendTo("/topic/{scope}")
-  public Message handleMessage(
-    Message message,
+  public ChatMessage handleMessage(
+    ChatMessage message,
     @Header("simpSessionId") String sessionId,
+    @Header("simpConnectHost") String virtualHost,
     @DestinationVariable String scope
   ) {
     log.debug(
-      "Handling message for tenant: {}, session: {}, scope: {}",
+      "Handling message for tenant: {}, vhost: {}, session: {}, scope: {}",
       message.getTenant(),
+      virtualHost,
       sessionId,
       scope
     );
 
+    if (!message.getTenant().equals(virtualHost)) {
+      log.warn(
+        "ChatMessage tenant {} doesn't match virtual host {}",
+        message.getTenant(),
+        virtualHost
+      );
+      return null;
+    }
+
     if (!message.getScope().equals(scope)) {
       log.warn(
-        "Message scope {} doesn't match path scope {}",
+        "ChatMessage scope {} doesn't match path scope {}",
         message.getScope(),
         scope
       );
@@ -44,23 +55,15 @@ public class MessageController {
 
     message.setTimestamp(new Date());
     message.setAcknowledged(true);
-    messageService.saveMessage(
-      message.getTenant(),
-      message.getUserId(),
-      message
-    );
+    messageService.saveMessage(virtualHost, message.getUserId(), message);
 
-    Message ackMessage = new Message();
+    ChatMessage ackMessage = new ChatMessage();
     BeanUtils.copyProperties(message, ackMessage);
     ackMessage.setContent(
       "ACK: backend received your message of '" + message.getContent() + "'"
     );
     ackMessage.setTimestamp(new Date());
-    messageService.saveMessage(
-      message.getTenant(),
-      message.getUserId(),
-      ackMessage
-    );
+    messageService.saveMessage(virtualHost, message.getUserId(), ackMessage);
 
     return ackMessage;
   }
