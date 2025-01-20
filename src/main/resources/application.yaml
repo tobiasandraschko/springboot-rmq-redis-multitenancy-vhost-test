@@ -22,4 +22,4 @@ rabbitmq:
     port: 8024
   username: guest
   password: guest
-  virtual-hosts: /,tenant1,tenant2
+  virtualHosts: /,tenant1,tenant2

@@ -3,6 +3,7 @@ package com.example.redisstomptest.controller;
 import com.example.redisstomptest.model.ChatMessage;
 import com.example.redisstomptest.service.MessageService;
 import java.util.Date;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -10,6 +11,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -17,54 +19,65 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class MessageController {
 
+  private static final String TENANT_ATTRIBUTE = "tenant";
   private final MessageService messageService;
 
-  @MessageMapping("/send/{scope}")
+  @MessageMapping("/app/send/{scope}")
   @SendTo("/topic/{scope}")
   public ChatMessage handleMessage(
     ChatMessage message,
     @Header("simpSessionId") String sessionId,
-    @Header("simpConnectHost") String virtualHost,
+    SimpMessageHeaderAccessor headerAccessor,
     @DestinationVariable String scope
   ) {
     log.debug(
-      "Handling message for tenant: {}, vhost: {}, session: {}, scope: {}",
-      message.getTenant(),
-      virtualHost,
+      "Received message: {}, sessionId: {}, scope: {}",
+      message,
       sessionId,
       scope
     );
+    log.debug("Message headers: {}", headerAccessor.toMap());
 
-    if (!message.getTenant().equals(virtualHost)) {
+    Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+    String tenant = sessionAttributes != null
+      ? (String) sessionAttributes.get(TENANT_ATTRIBUTE)
+      : null;
+
+    log.debug("Processing message for tenant: {}", tenant);
+
+    if (tenant == null) {
+      log.error("No tenant found in session attributes");
+      return null;
+    }
+
+    if (!message.getTenant().equals(tenant)) {
       log.warn(
-        "ChatMessage tenant {} doesn't match virtual host {}",
+        "ChatMessage tenant {} doesn't match session tenant {}",
         message.getTenant(),
-        virtualHost
+        tenant
       );
       return null;
     }
 
-    if (!message.getScope().equals(scope)) {
-      log.warn(
-        "ChatMessage scope {} doesn't match path scope {}",
-        message.getScope(),
-        scope
+    try {
+      message.setTimestamp(new Date());
+      message.setAcknowledged(true);
+      messageService.saveMessage(tenant, message.getUserId(), message);
+
+      ChatMessage ackMessage = new ChatMessage();
+      BeanUtils.copyProperties(message, ackMessage);
+      ackMessage.setContent(
+        "ACK: backend received your message of '" + message.getContent() + "'"
       );
+      ackMessage.setTimestamp(new Date());
+
+      log.debug("Sending acknowledgment message: {}", ackMessage);
+      messageService.saveMessage(tenant, message.getUserId(), ackMessage);
+
+      return ackMessage;
+    } catch (Exception e) {
+      log.error("Error processing message", e);
       return null;
     }
-
-    message.setTimestamp(new Date());
-    message.setAcknowledged(true);
-    messageService.saveMessage(virtualHost, message.getUserId(), message);
-
-    ChatMessage ackMessage = new ChatMessage();
-    BeanUtils.copyProperties(message, ackMessage);
-    ackMessage.setContent(
-      "ACK: backend received your message of '" + message.getContent() + "'"
-    );
-    ackMessage.setTimestamp(new Date());
-    messageService.saveMessage(virtualHost, message.getUserId(), ackMessage);
-
-    return ackMessage;
   }
 }

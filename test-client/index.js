@@ -47,7 +47,7 @@ function connect(tenant) {
           function (response) {
             try {
               debug(`Raw message received on ${scope}:`, response);
-              const message = JSON.parse(response.body); // Now parsing a single message
+              const message = JSON.parse(response.body);
 
               if (message.tenant === tenant) {
                 debug(
