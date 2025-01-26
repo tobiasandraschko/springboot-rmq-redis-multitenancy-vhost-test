@@ -1,25 +1,36 @@
 server:
-  port: 8085
+  port: 8080
+
+# ensure credentials match docker-compose.yml
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    password: abc123
+  websocket:
+    maxTextMessageBufferSize: 8192
+    maxBinaryMessageBufferSize: 8192
+
+websocket:
+  relay:
+    host: localhost
+    port: 8024 # default being 61613
+  client:
+    login: guest
+    passcode: guest
+  system:
+    login: guest
+    passcode: guest
+  heartbeat:
+    send:
+      interval: 10000
+    receive:
+      interval: 10000
+  allowed:
+    origins: "http://127.0.0.1:5500"
 
 logging:
   level:
-    org: INFO
-    org.springframework.web: DEBUG
-    org.springframework.messaging: DEBUG
+    com.example.websocketbroker: DEBUG
+    org.springframework.web.socket: DEBUG
 
-spring:
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: abc123
-      timeout: 2000
-      database: 0
-
-rabbitmq:
-  host: localhost
-  stomp:
-    port: 8024
-  username: guest
-  password: guest
-  virtualHosts: /,tenant1,tenant2

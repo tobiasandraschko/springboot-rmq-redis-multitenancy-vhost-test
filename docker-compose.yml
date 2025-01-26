@@ -15,6 +15,7 @@ services:
       bash -c "
         chmod +x /docker-entrypoint-initdb.d/rabbitmq-init.sh &&
         rabbitmq-plugins enable rabbitmq_stomp &&
+        rabbitmq-plugins enable rabbitmq_web_stomp &&  # Add this line
         rabbitmq-plugins enable rabbitmq_management &&
         rabbitmq-server &
         sleep 20 &&

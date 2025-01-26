@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+   <title>STOMP Test Client</title>
+   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet">
+   <script src="https://cdn.tailwindcss.com"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+   <link href="styles.css" rel="stylesheet">
+   <script src="client.js" defer></script>
+</head>
+<body class="bg-base-900 text-white">
+   <div class="container mx-auto p-4">
+       <h1 class="text-3xl font-bold mb-8 text-center">STOMP Test Client</h1>
+
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+           <div class="card bg-base-800 shadow-xl">
+               <div class="card-body">
+                   <h2 class="card-title">Tenant 1</h2>
+                   <div class="flex gap-2 mb-4">
+                       <button class="btn btn-primary" onclick="connect('tenant1')">Connect</button>
+                       <button class="btn btn-error" onclick="disconnect('tenant1')">Disconnect</button>
+                   </div>
+                   <div id="status-tenant1" class="badge badge-neutral">Disconnected</div>
+                   <div id="userid-tenant1" class="text-sm font-mono"></div>
+                   
+                   <div class="grid grid-cols-1 gap-4 mt-4">
+                       <div class="topic-group border border-gray-600 rounded-lg p-4">
+                           <h3 class="font-bold">News</h3>
+                           <input type="text" id="message-tenant1-news" placeholder="Enter message" class="input input-bordered w-full" />
+                           <button onclick="sendMessage('tenant1', 'news')" class="btn btn-sm mt-2">Send</button>
+                           <div id="messages-tenant1-news" class="messages mt-2 bg-base-700 rounded-box"></div>
+                       </div>
+
+                       <div class="topic-group border border-gray-600 rounded-lg p-4">
+                           <h3 class="font-bold">Alerts</h3>
+                           <input type="text" id="message-tenant1-alert" placeholder="Enter message" class="input input-bordered w-full" />
+                           <button onclick="sendMessage('tenant1', 'alert')" class="btn btn-sm mt-2">Send</button>
+                           <div id="messages-tenant1-alert" class="messages mt-2 bg-base-700 rounded-box"></div>
+                       </div>
+
+                       <div class="topic-group border border-gray-600 rounded-lg p-4">
+                           <h3 class="font-bold">Chat</h3>
+                           <input type="text" id="message-tenant1-chat" placeholder="Enter message" class="input input-bordered w-full" />
+                           <button onclick="sendMessage('tenant1', 'chat')" class="btn btn-sm mt-2">Send</button>
+                           <div id="messages-tenant1-chat" class="messages mt-2 bg-base-700 rounded-box"></div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+
+           <div class="card bg-base-800 shadow-xl">
+               <div class="card-body">
+                   <h2 class="card-title">Tenant 2</h2>
+                   <div class="flex gap-2 mb-4">
+                       <button class="btn btn-primary" onclick="connect('tenant2')">Connect</button>
+                       <button class="btn btn-error" onclick="disconnect('tenant2')">Disconnect</button>
+                   </div>
+                   <div id="status-tenant2" class="badge badge-neutral">Disconnected</div>
+                   <div id="userid-tenant2" class="text-sm font-mono"></div>
+                   
+                   <div class="grid grid-cols-1 gap-4 mt-4">
+                       <div class="topic-group border border-gray-600 rounded-lg p-4">
+                           <h3 class="font-bold">News</h3>
+                           <input type="text" id="message-tenant2-news" placeholder="Enter message" class="input input-bordered w-full" />
+                           <button onclick="sendMessage('tenant2', 'news')" class="btn btn-sm mt-2">Send</button>
+                           <div id="messages-tenant2-news" class="messages mt-2 bg-base-700 rounded-box"></div>
+                       </div>
+
+                       <div class="topic-group border border-gray-600 rounded-lg p-4">
+                           <h3 class="font-bold">Alerts</h3>
+                           <input type="text" id="message-tenant2-alert" placeholder="Enter message" class="input input-bordered w-full" />
+                           <button onclick="sendMessage('tenant2', 'alert')" class="btn btn-sm mt-2">Send</button>
+                           <div id="messages-tenant2-alert" class="messages mt-2 bg-base-700 rounded-box"></div>
+                       </div>
+
+                       <div class="topic-group border border-gray-600 rounded-lg p-4">
+                           <h3 class="font-bold">Chat</h3>
+                           <input type="text" id="message-tenant2-chat" placeholder="Enter message" class="input input-bordered w-full" />
+                           <button onclick="sendMessage('tenant2', 'chat')" class="btn btn-sm mt-2">Send</button>
+                           <div id="messages-tenant2-chat" class="messages mt-2 bg-base-700 rounded-box"></div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</body>
+</html>

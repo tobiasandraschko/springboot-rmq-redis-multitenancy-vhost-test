@@ -1,11 +1,13 @@
-package com.example.redisstomptest;
+package com.example.websocketbroker;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RmqStompTestApplicationTests {
+class WebsocketbrokerApplicationTests {
 
-  @Test
-  void contextLoads() {}
+	@Test
+	void contextLoads() {
+	}
+
 }

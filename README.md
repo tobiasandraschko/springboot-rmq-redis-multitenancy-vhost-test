@@ -7,7 +7,8 @@ Simple example demonstrating multi-tenant WebSocket messaging using Spring Boot,
 - Multi-tenant WebSocket communication via RabbitMQ STOMP
 - Message persistence in Redis
 - Web client for testing multiple tenant connections
-- Message acknowledgment and echo responses
+- Message forwarding on different topics including the sent userId's
+- Broadcasting Service which broadcasts system messages to the different tenants periodically on the news topic
 
 ## Prerequisites
 
@@ -28,6 +29,7 @@ docker-compose up -d
 ```
 
 3. Open the test clients index.html using VS Code's Live Server extension (127.0.0.1:5500)
+By opening multiple clients e. g. in two different browsers/windows you can test sending/receiving messages on the different tenants.
 
 ## Management UIs
 

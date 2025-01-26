@@ -1,0 +1,25 @@
+.messages {
+    height: 200px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.message {
+    @apply p-2 rounded mb-2;
+}
+
+.message.incoming {
+    @apply bg-base-700;
+}
+
+.message.outgoing {
+    @apply bg-primary/10;
+}
+
+.status.connected {
+    @apply badge-success;
+}
+
+.status.disconnected {
+    @apply badge-error;
+}
