@@ -54,9 +54,9 @@ public class WebSocketController {
       return;
     }
 
-    String tenant = headerAccessor
-      .getFirstNativeHeader("authorization")
-      .replace("Bearer ", "");
+    String tenant = (String) headerAccessor
+      .getSessionAttributes()
+      .get("tenant");
     String userId = headerAccessor.getFirstNativeHeader("custom-user-id");
 
     log.info("Received message for tenant: {}, topic: {}", tenant, topic);

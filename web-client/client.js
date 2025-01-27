@@ -130,7 +130,6 @@ function sendMessage(tenant, topic) {
     client.send(
       `/app/send/${topic}`,
       {
-        authorization: `Bearer ${tenant}`,
         "user-id": "guest",
         "custom-user-id": userIds[tenant],
       },

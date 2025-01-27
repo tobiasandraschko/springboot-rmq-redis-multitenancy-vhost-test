@@ -41,6 +41,7 @@ public class TenantInterceptor implements ChannelInterceptor {
         String tenant = authHeader.substring(7);
         accessor.setDestination("/queue/");
         accessor.setHost(tenant);
+        accessor.getSessionAttributes().put("tenant", tenant);
       }
     }
     return message;
